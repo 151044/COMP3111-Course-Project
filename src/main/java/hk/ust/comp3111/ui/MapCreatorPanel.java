@@ -33,6 +33,7 @@ public class MapCreatorPanel extends ConstrainedPanel {
     private Vertex start;
     private final Map<Vertex, Vertex.TileType> toRevert = new HashMap<>();
     private final BreadthFirstSearch search = new BreadthFirstSearch();
+    private final List<JButton> generatingButtons = new ArrayList<>();
 
     /**
      * Constructs a new map creator panel.
@@ -80,6 +81,7 @@ public class MapCreatorPanel extends ConstrainedPanel {
         generatingMethods.forEach(s -> {
             JButton button = new JButton(s);
             generatePanel.add(button);
+            generatingButtons.add(button);
             button.addActionListener(generateHandler);
         });
 
@@ -215,7 +217,11 @@ public class MapCreatorPanel extends ConstrainedPanel {
             if (strategy != null) {
                 strategy.onUpdate(ignored -> SwingUtilities.invokeLater(component::render));
                 MazeStrategy finalStrategy = strategy;
-                new Thread(() -> finalStrategy.generate(mapData)).start();
+                new Thread(() -> {
+                    SwingUtilities.invokeLater(() -> generatingButtons.forEach(b -> b.setEnabled(false)));
+                    finalStrategy.generate(mapData);
+                    SwingUtilities.invokeLater(() -> generatingButtons.forEach(b -> b.setEnabled(true)));
+                }).start();
             }
         }
     }
