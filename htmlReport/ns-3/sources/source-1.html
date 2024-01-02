@@ -1,0 +1,266 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > BreadthFirstSearch</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">hk.ust.comp3111.algo.shortestpath</a>
+</div>
+
+<h1>Coverage Summary for Class: BreadthFirstSearch (hk.ust.comp3111.algo.shortestpath)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BreadthFirstSearch</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (40/40)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BreadthFirstSearch$GraphNode</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (47/47)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package hk.ust.comp3111.algo.shortestpath;
+&nbsp;
+&nbsp;import hk.ust.comp3111.api.MapData;
+&nbsp;import hk.ust.comp3111.api.Vertex;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;import java.util.function.Function;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class for the shortest path algorithm BFS. Used by maze visualizer, and Tom in the game loop.
+&nbsp; */
+<b class="fc">&nbsp;public class BreadthFirstSearch {</b>
+&nbsp;
+<b class="fc">&nbsp;    private final Random rand = new Random();</b>
+&nbsp;    /**
+&nbsp;     * A node in BFS graph. Contains its vertex, previous node, and adjacent vertices.
+&nbsp;     */
+&nbsp;    private static class GraphNode {
+&nbsp;
+&nbsp;        private final Vertex current;
+&nbsp;        private GraphNode parent;
+&nbsp;        private boolean visited;
+&nbsp;        private final List&lt;Vertex&gt; adjacents;
+&nbsp;
+&nbsp;        /**
+&nbsp;         * Constructs a new GraphNode object.
+&nbsp;         * @param vertex The current Vertex of the node.
+&nbsp;         * @param data The map data for which to detect adjacent vertices.
+&nbsp;         */
+<b class="fc">&nbsp;        public GraphNode(Vertex vertex, MapData data) {</b>
+<b class="fc">&nbsp;            this.current = vertex;</b>
+<b class="fc">&nbsp;            this.parent = null;</b>
+<b class="fc">&nbsp;            this.visited = false;</b>
+<b class="fc">&nbsp;            this.adjacents = data.around(vertex, 1).stream()</b>
+<b class="fc">&nbsp;                    .filter(data::isPassable)</b>
+<b class="fc">&nbsp;                    .collect(Collectors.toList());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The actual BFS algorithm.
+&nbsp;     * @param data The map data of the maze.
+&nbsp;     * @param start The Vertex at which to start searching from.
+&nbsp;     * @param end The Vertex at which the searching ends.
+&nbsp;     * @param shortestPath Toggle whether BFS stops at exit (True) or after traversing every adjacent node (False)
+&nbsp;     * @return A list of Vertex of the shortest path, from start to end.
+&nbsp;     */
+&nbsp;    public List&lt;Vertex&gt; bfsGeneral(MapData data, Vertex start, Vertex end, boolean shortestPath) {
+&nbsp;
+&nbsp;        // if start or end is blocked then return Empty List
+<b class="fc">&nbsp;        if (!data.isPassable(start) || !data.isPassable(end)) {</b>
+<b class="fc">&nbsp;            return List.of();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // establish graph, queue, path
+<b class="fc">&nbsp;        Map&lt;Vertex, GraphNode&gt; graph = data.getVertices().stream() // new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;                .flatMap(List::stream)</b>
+<b class="fc">&nbsp;                .filter(v -&gt; (v != start &amp;&amp; data.isPassable(v)))</b>
+<b class="fc">&nbsp;                .collect(Collectors.toMap(Function.identity(), v -&gt; new GraphNode(v, data)));</b>
+&nbsp;
+<b class="fc">&nbsp;        LinkedList&lt;GraphNode&gt; queue = new LinkedList&lt;&gt;();</b>
+<b class="fc">&nbsp;        List&lt;Vertex&gt; route = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        boolean pathFound = false;</b>
+&nbsp;
+&nbsp;        // traverse graph
+<b class="fc">&nbsp;        graph.put(start, new GraphNode(start, data));</b>
+<b class="fc">&nbsp;        queue.add(graph.get(start));</b>
+&nbsp;
+<b class="fc">&nbsp;        while (!queue.isEmpty()) {</b>
+&nbsp;            // get first node
+<b class="fc">&nbsp;            GraphNode currentNode = queue.removeFirst();</b>
+&nbsp;
+&nbsp;            // if current node is exit then exit loop
+<b class="fc">&nbsp;            if (currentNode.current.equals(end)) {</b>
+<b class="fc">&nbsp;                pathFound = true;</b>
+<b class="fc">&nbsp;                break;</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // otherwise continue to update graph
+<b class="fc">&nbsp;            for (Vertex v : currentNode.adjacents) {</b>
+<b class="fc">&nbsp;                GraphNode it = graph.get(v);</b>
+<b class="fc">&nbsp;                if (!it.visited) {</b>
+<b class="fc">&nbsp;                    if (!shortestPath) {route.add(v);}</b>
+<b class="fc">&nbsp;                    it.parent = currentNode;</b>
+<b class="fc">&nbsp;                    it.visited = true;</b>
+<b class="fc">&nbsp;                    queue.add(graph.get(v));</b>
+&nbsp;                }
+<b class="fc">&nbsp;            }</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+&nbsp;        // return the desired path
+<b class="fc">&nbsp;        if (shortestPath) {</b>
+&nbsp;
+&nbsp;            // if the entrance and exit are not connected on the graph, then there is no possible path
+<b class="fc">&nbsp;            if (!pathFound) {return List.of();}</b>
+&nbsp;
+&nbsp;            // get path by back traversal
+<b class="fc">&nbsp;            GraphNode pathIter = graph.get(end);</b>
+&nbsp;
+<b class="fc">&nbsp;            while (!pathIter.current.equals(start)) {</b>
+<b class="fc">&nbsp;                route.add(pathIter.current);</b>
+<b class="fc">&nbsp;                pathIter = pathIter.parent;</b>
+&nbsp;            }
+<b class="fc">&nbsp;            route.add(start);</b>
+<b class="fc">&nbsp;            Collections.reverse(route);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return route;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the next Vertex to move to. Used by Tom in game loop.
+&nbsp;     * @param data The map data of the maze.
+&nbsp;     * @param start The Vertex at which to start searching from.
+&nbsp;     * @param end The Vertex at which the searching ends.
+&nbsp;     * @return The next optimal Vertex to move to.
+&nbsp;     */
+&nbsp;    public Vertex nextShortestPathVertex(MapData data, Vertex start, Vertex end) {
+<b class="fc">&nbsp;        List&lt;Vertex&gt; ret = bfsGeneral(data, start, end, true);</b>
+<b class="fc">&nbsp;        return (ret.size() &lt;= 1) ? start : ret.get(1);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets a random Vertex in the playable area of the maze. Used to update Crystal in game loop.
+&nbsp;     * @param data The map data of the maze.
+&nbsp;     * @param start The Vertex at which to start searching from.
+&nbsp;     * @param end The Vertex at which the searching ends.
+&nbsp;     * @return A random reachable Vertex.
+&nbsp;     */
+&nbsp;    public Vertex randomReachableVertex(MapData data, Vertex start, Vertex end) {
+<b class="fc">&nbsp;        List&lt;Vertex&gt; ret = bfsGeneral(data, start, end, false).stream().filter(v -&gt; (v.getTileType() == Vertex.TileType.CLEAR)).toList();</b>
+<b class="fc">&nbsp;        return (ret.size() &lt;= 1) ? start : ret.get(rand.nextInt(ret.size()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-11-14 17:58</div>
+</div>
+</body>
+</html>

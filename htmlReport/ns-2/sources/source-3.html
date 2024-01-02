@@ -1,0 +1,180 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > RecursiveBacktracker</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">hk.ust.comp3111.algo.maze</a>
+</div>
+
+<h1>Coverage Summary for Class: RecursiveBacktracker (hk.ust.comp3111.algo.maze)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RecursiveBacktracker</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (36/36)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package hk.ust.comp3111.algo.maze;
+&nbsp;
+&nbsp;import hk.ust.comp3111.api.Coord;
+&nbsp;import hk.ust.comp3111.api.MapData;
+&nbsp;import hk.ust.comp3111.api.Vertex;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Random;
+&nbsp;import java.util.function.Consumer;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import static hk.ust.comp3111.api.Vertex.TileType.*;
+&nbsp;import static hk.ust.comp3111.api.Vertex.TileType.EXIT;
+&nbsp;
+&nbsp;/**
+&nbsp; * Implements the recursive backtracker strategy for generating mazes.
+&nbsp; */
+<b class="fc">&nbsp;public class RecursiveBacktracker implements MazeStrategy {</b>
+&nbsp;    private Consumer&lt;MapData&gt; cons;
+<b class="fc">&nbsp;    private final Random random = new Random();</b>
+&nbsp;    @Override
+&nbsp;    public void generate(MapData data) {
+<b class="fc">&nbsp;        data.forAll(v -&gt; v.setTileType(Vertex.TileType.BARRIER));</b>
+<b class="fc">&nbsp;        List&lt;Vertex&gt; visited = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        Vertex root = data.at(new Coord(random.nextInt(MapData.DEFAULT_WIDTH), random.nextInt(MapData.DEFAULT_HEIGHT)))</b>
+<b class="fc">&nbsp;                .orElse(data.at(new Coord(0, 0)).orElseThrow());</b>
+<b class="fc">&nbsp;        visited.add(root);</b>
+<b class="fc">&nbsp;        root.setTileType(BARRIER);</b>
+<b class="fc">&nbsp;        carve(data, root, visited);</b>
+<b class="fc">&nbsp;        Vertex entrance = MazeHelper.generateAtCol(data, 0);</b>
+<b class="fc">&nbsp;        Vertex exit = MazeHelper.generateAtCol(data, MapData.DEFAULT_WIDTH - 1);</b>
+<b class="fc">&nbsp;        entrance.setTileType(ENTRANCE);</b>
+<b class="fc">&nbsp;        exit.setTileType(EXIT);</b>
+&nbsp;
+<b class="fc">&nbsp;        MazeHelper.addPath(data);</b>
+<b class="fc">&nbsp;        if (cons != null) {</b>
+<b class="fc">&nbsp;            cons.accept(data);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Carves a random path recursively.
+&nbsp;     * @param data The map data to use
+&nbsp;     * @param target The target vertex to slice from
+&nbsp;     * @param visited The list of visited vertices
+&nbsp;     */
+&nbsp;    private void carve(MapData data, Vertex target, List&lt;Vertex&gt; visited) {
+<b class="fc">&nbsp;        List&lt;Vertex&gt; around = data.around(target, 2)</b>
+<b class="fc">&nbsp;                .stream().filter(v -&gt; !visited.contains(v))</b>
+<b class="fc">&nbsp;                .filter(v -&gt; v.getTileType() != CLEAR)</b>
+<b class="fc">&nbsp;                .collect(Collectors.toList());</b>
+<b class="fc">&nbsp;        if (around.size() &gt; 0) {</b>
+<b class="fc">&nbsp;            Collections.shuffle(around);</b>
+<b class="fc">&nbsp;            for (Vertex v : around) {</b>
+<b class="fc">&nbsp;                if (v.getTileType() != CLEAR &amp;&amp; !visited.contains(v)) {</b>
+<b class="fc">&nbsp;                    int dx = v.x() - target.x();</b>
+<b class="fc">&nbsp;                    int dy = v.y() - target.y();</b>
+<b class="fc">&nbsp;                    Vertex between = data.at(target.getCoord()</b>
+<b class="fc">&nbsp;                                    .translate(new Coord((int) Math.signum(dx), (int) Math.signum(dy))))</b>
+<b class="fc">&nbsp;                            .orElseThrow();</b>
+<b class="fc">&nbsp;                    between.setTileType(CLEAR);</b>
+<b class="fc">&nbsp;                    v.setTileType(CLEAR);</b>
+<b class="fc">&nbsp;                    visited.add(between);</b>
+<b class="fc">&nbsp;                    visited.add(v);</b>
+<b class="fc">&nbsp;                    carve(data, v, visited);</b>
+&nbsp;                }
+<b class="fc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void onUpdate(Consumer&lt;MapData&gt; toRun) {
+<b class="fc">&nbsp;        cons = toRun;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-11-14 17:58</div>
+</div>
+</body>
+</html>

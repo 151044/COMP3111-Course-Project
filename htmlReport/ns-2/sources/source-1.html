@@ -1,0 +1,174 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MazeHelper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">hk.ust.comp3111.algo.maze</a>
+</div>
+
+<h1>Coverage Summary for Class: MazeHelper (hk.ust.comp3111.algo.maze)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MazeHelper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (30/30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package hk.ust.comp3111.algo.maze;
+&nbsp;
+&nbsp;import hk.ust.comp3111.algo.shortestpath.BreadthFirstSearch;
+&nbsp;import hk.ust.comp3111.api.Coord;
+&nbsp;import hk.ust.comp3111.api.MapData;
+&nbsp;import hk.ust.comp3111.api.Vertex;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;import java.util.function.Function;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import static hk.ust.comp3111.api.Vertex.TileType.*;
+&nbsp;
+&nbsp;public class MazeHelper {
+<b class="fc">&nbsp;    private MazeHelper(){</b>
+<b class="fc">&nbsp;        throw new AssertionError(&quot;MazeHelper cannot be instantiated!&quot;);</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    private static final Random random = new Random();</b>
+<b class="fc">&nbsp;    private static final BreadthFirstSearch search = new BreadthFirstSearch();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Generates a random vertex on the given column which can be accessed (has at least one passable square).
+&nbsp;     * @param data The map data to use
+&nbsp;     * @param col The column at which to get a random vertex
+&nbsp;     * @throws NoSuchElementException If the map column is out of range
+&nbsp;     * @return A random vertex which can be accessed
+&nbsp;     */
+&nbsp;    public static Vertex generateAtCol(MapData data, int col) {
+&nbsp;        Vertex ret;
+&nbsp;        do {
+<b class="fc">&nbsp;            ret = data.at(new Coord(col, random.nextInt(MapData.DEFAULT_HEIGHT - 1)))</b>
+<b class="fc">&nbsp;                    .orElseThrow();</b>
+<b class="fc">&nbsp;        } while (data.around(ret, 1).stream().noneMatch(data::isPassable));</b>
+<b class="fc">&nbsp;        return ret;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Adds a path to the given maze which has an existing path.
+&nbsp;     * @param data The maze to modify
+&nbsp;     */
+&nbsp;    public static void addPath(MapData data) {
+<b class="fc">&nbsp;        if (data.findEntrance().isEmpty() || data.findExit().isEmpty()) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Map data has no entrance or exit.&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Vertex entrance = data.findEntrance().orElseThrow();</b>
+<b class="fc">&nbsp;        Vertex exit = data.findExit().orElseThrow();</b>
+<b class="fc">&nbsp;        List&lt;Vertex&gt; reachable = search.bfsGeneral(data, entrance, exit, false);</b>
+&nbsp;
+&nbsp;        // partitions the set of reachable vertices (KNN with k = 2)
+<b class="fc">&nbsp;        Map&lt;Vertex, Vertex.TileType&gt; partitioned = reachable.stream().collect(Collectors.toMap(</b>
+<b class="fc">&nbsp;                Function.identity(), v -&gt; search.bfsGeneral(data, entrance, v, true).size() &gt;</b>
+<b class="fc">&nbsp;                        search.bfsGeneral(data, v, exit, true).size() ? EXIT : ENTRANCE));</b>
+&nbsp;        // List of tiles which can be replaced
+<b class="fc">&nbsp;        Map&lt;Vertex, List&lt;Vertex&gt;&gt; replacable = partitioned.entrySet().stream().map(entry -&gt; Map.entry(entry.getKey(),</b>
+<b class="fc">&nbsp;                data.around(entry.getKey(), 2).stream()</b>
+<b class="fc">&nbsp;                .filter(v -&gt; partitioned.get(v) != entry.getValue()).toList()))</b>
+<b class="fc">&nbsp;                .filter(v -&gt; !v.getValue().isEmpty())</b>
+<b class="fc">&nbsp;                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));</b>
+&nbsp;
+<b class="fc">&nbsp;        Map.Entry&lt;Vertex, List&lt;Vertex&gt;&gt; chosen = new ArrayList&lt;&gt;(replacable.entrySet()).get(random.nextInt(replacable.size()));</b>
+<b class="fc">&nbsp;        Vertex neighbour = chosen.getValue().get(random.nextInt(chosen.getValue().size()));</b>
+<b class="fc">&nbsp;        Vertex vert = chosen.getKey();</b>
+<b class="fc">&nbsp;        int dx = neighbour.x() - vert.x();</b>
+<b class="fc">&nbsp;        int dy = neighbour.y() - vert.y();</b>
+<b class="fc">&nbsp;        Vertex between = data.at(vert.getCoord()</b>
+<b class="fc">&nbsp;                        .translate(new Coord((int) Math.signum(dx), (int) Math.signum(dy))))</b>
+<b class="fc">&nbsp;                .orElseThrow();</b>
+<b class="fc">&nbsp;        between.setTileType(CLEAR);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-11-14 17:58</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,272 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Vertex</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">hk.ust.comp3111.api</a>
+</div>
+
+<h1>Coverage Summary for Class: Vertex (hk.ust.comp3111.api)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Vertex</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Vertex$TileType</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (30/30)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package hk.ust.comp3111.api;
+&nbsp;
+&nbsp;import java.awt.*;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * A vertex in the game. Contains all the information about a single square on the game map.
+&nbsp; */
+&nbsp;public class Vertex implements Comparable&lt;Vertex&gt; {
+&nbsp;    private final Coord coord;
+&nbsp;    private TileType tileType;
+<b class="fc">&nbsp;    private static final Comparator&lt;Vertex&gt; comparator = Comparator.comparingInt(Vertex::y)</b>
+<b class="fc">&nbsp;            .thenComparing(Vertex::x);</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new {@link Vertex} with the specified {@link TileType} at the coordinates given.
+&nbsp;     * @param c The coordinates of this vertex
+&nbsp;     * @param type The type of tile
+&nbsp;     */
+<b class="fc">&nbsp;    public Vertex(Coord c, TileType type) {</b>
+<b class="fc">&nbsp;        this.coord = c;</b>
+<b class="fc">&nbsp;        this.tileType = type;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the coordinates of this vertex.
+&nbsp;     * @return The coordinates of this vertex
+&nbsp;     */
+&nbsp;
+&nbsp;    public Coord getCoord() {
+<b class="fc">&nbsp;        return coord;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Convenience method to get the x-coordinate of this vertex.
+&nbsp;     * @return The x-coordinate of this vertex
+&nbsp;     */
+&nbsp;    public int x() {
+<b class="fc">&nbsp;        return coord.x();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Convenience method to get the y-coordinate of this vertex.
+&nbsp;     * @return The y-coordinate of this vertex
+&nbsp;     */
+&nbsp;    public int y() {
+<b class="fc">&nbsp;        return coord.y();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Gets the {@link TileType} of this vertex.
+&nbsp;     * @return The type of tile that this vertex is
+&nbsp;     */
+&nbsp;
+&nbsp;    public TileType getTileType() {
+<b class="fc">&nbsp;        return tileType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sets the tile type of this vertex.
+&nbsp;     * @param type The type to set
+&nbsp;     */
+&nbsp;    public void setTileType(TileType type) {
+<b class="fc">&nbsp;        this.tileType = type;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int compareTo(Vertex vertex) {
+<b class="fc">&nbsp;        return comparator.compare(this, vertex);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * An enum representing the type of the vertex.
+&nbsp;     * Use {@link Enum#ordinal()} to obtain the value for writing to .csv.
+&nbsp;     */
+<b class="fc">&nbsp;    public enum TileType {</b>
+&nbsp;        /**
+&nbsp;         * A clear vertex. Passable by entities.
+&nbsp;         */
+<b class="fc">&nbsp;        CLEAR(Color.WHITE),</b>
+&nbsp;        /**
+&nbsp;         * A barrier. Cannot be passed.
+&nbsp;         */
+<b class="fc">&nbsp;        BARRIER(Color.DARK_GRAY),</b>
+&nbsp;        /**
+&nbsp;         * The entrance tile. Passable by entities.
+&nbsp;         */
+<b class="fc">&nbsp;        ENTRANCE(Color.GREEN),</b>
+&nbsp;        /**
+&nbsp;         * The exit tile. Passable by entities.
+&nbsp;         */
+<b class="fc">&nbsp;        EXIT(Color.ORANGE);</b>
+&nbsp;
+&nbsp;        /**
+&nbsp;         * Gets the color of this vertex.
+&nbsp;         * @return The color to render on the screen
+&nbsp;         */
+&nbsp;        public Color getColor() {
+<b class="fc">&nbsp;            return c;</b>
+&nbsp;        }
+&nbsp;        private final Color c;
+&nbsp;        // private: no doc required?
+<b class="fc">&nbsp;        TileType(Color c) {</b>
+<b class="fc">&nbsp;            this.c = c;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        /**
+&nbsp;         * Gets a {@link TileType TileType} from the ordinal returned by {@link Enum#ordinal()}.
+&nbsp;         * @param ordinal The index of the {@link TileType TileType}, in declaration order
+&nbsp;         * @return The corresponding {@link TileType TileType}
+&nbsp;         * @throws IllegalArgumentException If the index provided is out of range.
+&nbsp;         */
+&nbsp;        public static TileType from(int ordinal) {
+&nbsp;            // Note: This is **bad practice** in normal programming.
+&nbsp;            // We should not be using ordinal() directly, but I am lazy.
+<b class="fc">&nbsp;            return switch (ordinal) {</b>
+<b class="fc">&nbsp;                case 0 -&gt; CLEAR;</b>
+<b class="fc">&nbsp;                case 1 -&gt; BARRIER;</b>
+<b class="fc">&nbsp;                case 2 -&gt; ENTRANCE;</b>
+<b class="fc">&nbsp;                case 3 -&gt; EXIT;</b>
+<b class="fc">&nbsp;                default -&gt; throw new IllegalArgumentException(&quot;No such enum ordinal in TileType: &quot; + ordinal);</b>
+&nbsp;            };
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="fc">&nbsp;        if (this == o) return true;</b>
+<b class="fc">&nbsp;        if (!(o instanceof Vertex vertex)) return false;</b>
+<b class="fc">&nbsp;        return Objects.equals(coord, vertex.coord) &amp;&amp; tileType == vertex.tileType;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+<b class="fc">&nbsp;        return Objects.hash(coord, tileType);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="fc">&nbsp;        return coord.toString() + &quot;, &quot; + tileType;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-11-14 17:58</div>
+</div>
+</body>
+</html>

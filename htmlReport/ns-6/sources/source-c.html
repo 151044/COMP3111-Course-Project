@@ -1,0 +1,235 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > UIHelper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">hk.ust.comp3111.ui</a>
+</div>
+
+<h1>Coverage Summary for Class: UIHelper (hk.ust.comp3111.ui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UIHelper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (47/47)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package hk.ust.comp3111.ui;
+&nbsp;
+&nbsp;import javax.imageio.ImageIO;
+&nbsp;import javax.swing.*;
+&nbsp;import javax.swing.filechooser.FileNameExtensionFilter;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.image.BufferedImage;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+&nbsp;/**
+&nbsp; * Utility class for layout-related static methods.
+&nbsp; */
+&nbsp;public class UIHelper {
+<b class="fc">&nbsp;    private UIHelper(){</b>
+<b class="fc">&nbsp;        throw new AssertionError(&quot;UIHelper cannot be instantiated!&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Factory for allocating JFileChoosers which can only choose .csv files.
+&nbsp;     * @return JFileChoosers starting at current directory
+&nbsp;     */
+&nbsp;    public static JFileChooser getCsvOpener() {
+<b class="fc">&nbsp;        JFileChooser chooser = new JFileChooser(Path.of(&quot;&quot;).toAbsolutePath().toFile());</b>
+<b class="fc">&nbsp;        chooser.setFileFilter(new FileNameExtensionFilter(&quot;CSV Files&quot;, &quot;csv&quot;));</b>
+<b class="fc">&nbsp;        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);</b>
+<b class="fc">&nbsp;        return chooser;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a reasonable set of defaults for use with {@link GridBagLayout}.
+&nbsp;     * Grid heights and widths are set to {@link GridBagConstraints#REMAINDER}.
+&nbsp;     * GridX and GridY are set to 0.
+&nbsp;     * WeightX and WeightY are both 1.
+&nbsp;     * Fill is equal to {@link GridBagConstraints#BOTH}.
+&nbsp;     * Anchor is set to {@link GridBagConstraints#CENTER}.
+&nbsp;     * @return A {@link GridBagConstraints} object, with the specified fields as above.
+&nbsp;     */
+&nbsp;    public static GridBagConstraints defaultGridConstraints() {
+<b class="fc">&nbsp;        GridBagConstraints cons = new GridBagConstraints();</b>
+<b class="fc">&nbsp;        cons.gridheight = GridBagConstraints.REMAINDER;</b>
+<b class="fc">&nbsp;        cons.gridwidth = GridBagConstraints.REMAINDER;</b>
+<b class="fc">&nbsp;        cons.gridx = 0;</b>
+<b class="fc">&nbsp;        cons.gridy = 0;</b>
+<b class="fc">&nbsp;        cons.weightx = 1;</b>
+<b class="fc">&nbsp;        cons.weighty = 1;</b>
+<b class="fc">&nbsp;        cons.anchor = GridBagConstraints.CENTER;</b>
+<b class="fc">&nbsp;        cons.fill = GridBagConstraints.BOTH;</b>
+<b class="fc">&nbsp;        return cons;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Shows an error dialog which does not block any other tasks.
+&nbsp;     * @param message The error message to show
+&nbsp;     */
+&nbsp;    public static void showErrorDialog(String message) {
+<b class="fc">&nbsp;        JOptionPane pane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);</b>
+<b class="fc">&nbsp;        JDialog dialog = pane.createDialog(null, &quot;Error!&quot;);</b>
+<b class="fc">&nbsp;        dialog.setModalityType(Dialog.ModalityType.MODELESS);</b>
+<b class="fc">&nbsp;        dialog.setVisible(true);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Shows a dialog to prompt the user to open a file.
+&nbsp;     * @return An optional containing a {@link File} if the user chooses a file; an empty optional otherwise
+&nbsp;     */
+&nbsp;    public static Optional&lt;File&gt; showFileOpener() {
+<b class="fc">&nbsp;        JFileChooser chooser = getCsvOpener();</b>
+<b class="fc">&nbsp;        int ret = chooser.showOpenDialog(null);</b>
+<b class="fc">&nbsp;        if (ret == JFileChooser.APPROVE_OPTION) {</b>
+<b class="fc">&nbsp;            File f = chooser.getSelectedFile();</b>
+<b class="fc">&nbsp;            if (f.exists()) {</b>
+<b class="fc">&nbsp;                return Optional.of(f);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return Optional.empty();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Attempts to load an image from the specified path.
+&nbsp;     * If the image cannot be found on the path, load from the executable using {@link Class#getResourceAsStream(String)}.
+&nbsp;     * Shows an error dialog if the image cannot be loaded.
+&nbsp;     * @param path The path to load images from
+&nbsp;     * @return An image if loading is successful; null otherwise
+&nbsp;     */
+&nbsp;    public static BufferedImage readImage(Path path) {
+<b class="fc">&nbsp;        Objects.requireNonNull(path);</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            if (!path.toFile().exists()) {</b>
+<b class="fc">&nbsp;                String resource = path.toFile().getName();</b>
+<b class="fc">&nbsp;                InputStream stream = UIHelper.class.getResourceAsStream(&quot;/&quot; + resource);</b>
+<b class="fc">&nbsp;                if (stream == null) {</b>
+<b class="fc">&nbsp;                    throw new IOException(&quot;Unable to read &quot; + resource);</b>
+&nbsp;                }
+<b class="fc">&nbsp;                return ImageIO.read(stream);</b>
+&nbsp;            } else {
+<b class="fc">&nbsp;                return ImageIO.read(path.toFile());</b>
+&nbsp;            }
+<b class="fc">&nbsp;        } catch (IOException e) {</b>
+<b class="fc">&nbsp;            showErrorDialog(e.getMessage());</b>
+<b class="fc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Shows a save file dialog, then runs the action provided on success.
+&nbsp;     * @param cons The action to run on success
+&nbsp;     */
+&nbsp;    public static void saveFile(Consumer&lt;File&gt; cons) {
+<b class="fc">&nbsp;        JFileChooser chooser = getCsvOpener();</b>
+<b class="fc">&nbsp;        int ret = chooser.showSaveDialog(null);</b>
+<b class="fc">&nbsp;        if (ret == JFileChooser.APPROVE_OPTION) {</b>
+<b class="fc">&nbsp;            File f = chooser.getSelectedFile();</b>
+<b class="fc">&nbsp;            if (f.exists()) {</b>
+<b class="fc">&nbsp;                int result = JOptionPane.showConfirmDialog(null, &quot;Overwrite existing file?&quot;,</b>
+&nbsp;                        &quot;Overwrite file?&quot;, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+<b class="fc">&nbsp;                if (result != JOptionPane.YES_OPTION) {</b>
+&nbsp;                    return;
+&nbsp;                }
+&nbsp;            }
+<b class="fc">&nbsp;            cons.accept(f);</b>
+<b class="fc">&nbsp;            JOptionPane.showMessageDialog(null,</b>
+&nbsp;                    &quot;File has been saved.&quot;, &quot;Success!&quot;,
+&nbsp;                    JOptionPane.INFORMATION_MESSAGE);
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-11-14 17:58</div>
+</div>
+</body>
+</html>

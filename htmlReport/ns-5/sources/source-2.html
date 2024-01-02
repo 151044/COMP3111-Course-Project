@@ -1,0 +1,314 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Engine</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">hk.ust.comp3111.engine</a>
+</div>
+
+<h1>Coverage Summary for Class: Engine (hk.ust.comp3111.engine)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Engine</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (74/74)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Engine$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (75/75)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package hk.ust.comp3111.engine;
+&nbsp;
+&nbsp;import hk.ust.comp3111.algo.shortestpath.BreadthFirstSearch;
+&nbsp;import hk.ust.comp3111.api.Coord;
+&nbsp;import hk.ust.comp3111.api.MapData;
+&nbsp;import hk.ust.comp3111.api.Vertex;
+&nbsp;import hk.ust.comp3111.ui.Direction;
+&nbsp;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Engine, the class responsible for the game loop.
+&nbsp; */
+&nbsp;public class Engine {
+&nbsp;    private final MapData mapData;
+&nbsp;    private final Tom tom;
+&nbsp;    private final Jerry jerry;
+&nbsp;    private final Crystal crystal;
+<b class="fc">&nbsp;    private final ImagePath[] imagePathValues = ImagePath.values();</b>
+&nbsp;    private final Vertex entryPoint;
+&nbsp;    private final Vertex exitPoint;
+<b class="fc">&nbsp;    private Direction direction = Direction.NONE;</b>
+<b class="fc">&nbsp;    private final BreadthFirstSearch bfsPath = new BreadthFirstSearch();</b>
+&nbsp;    private int tomCount;
+&nbsp;    private static final int TOM_UPDATE_RATE = 4;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructor of the Engine class.
+&nbsp;     * @param imagePaths A Map of Path object that leads to the image file containing the sprites of Entity classes
+&nbsp;     */
+<b class="fc">&nbsp;    public Engine(MapData mapData, Map&lt;ImagePath, Path&gt; imagePaths) {</b>
+&nbsp;
+&nbsp;        // Other data members
+<b class="fc">&nbsp;        this.mapData = mapData;</b>
+<b class="fc">&nbsp;        this.tom = new Tom(imagePaths, ImagePath.TOM_LEFT);</b>
+<b class="fc">&nbsp;        this.jerry = new Jerry(imagePaths, ImagePath.JERRY_LEFT);</b>
+<b class="fc">&nbsp;        this.crystal = new Crystal(imagePaths, ImagePath.CRYSTAL);</b>
+<b class="fc">&nbsp;        this.tomCount = 0;</b>
+&nbsp;
+&nbsp;        // If there is somehow no entry/exit point in the map
+<b class="fc">&nbsp;        entryPoint = mapData.findEntrance().orElseThrow(() -&gt; new IllegalStateException(&quot;The map does not have an entry point.&quot;));</b>
+<b class="fc">&nbsp;        exitPoint = mapData.findExit().orElseThrow(() -&gt; new IllegalStateException(&quot;The map does not have an exit point.&quot;));</b>
+<b class="fc">&nbsp;        mapData.addEntity(entryPoint, jerry);</b>
+<b class="fc">&nbsp;        mapData.addEntity(exitPoint, tom);</b>
+&nbsp;        // Add crystal to the map
+<b class="fc">&nbsp;        mapData.addEntity(bfsPath.randomReachableVertex(mapData, this.entryPoint, this.exitPoint), crystal);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * A method to get the map of the class.
+&nbsp;     * @return the MapData object of the Engine class
+&nbsp;     */
+&nbsp;    public MapData getMapData() {
+<b class="fc">&nbsp;        return mapData;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * A mutator to change the direction Jerry is moving towards.
+&nbsp;     * @param dir the input Direction enum value
+&nbsp;     */
+&nbsp;    public void changeDirection(Direction dir){
+<b class="fc">&nbsp;        this.direction = dir;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The actual gameplay.
+&nbsp;     * Supposed to be updated per tick of a game.
+&nbsp;     * @return A {@link GameStatus} value that indicates the state of the game
+&nbsp;     */
+&nbsp;    public GameStatus tick() {
+<b class="fc">&nbsp;        Direction dir = this.direction;</b>
+<b class="fc">&nbsp;        this.direction = Direction.NONE;</b>
+&nbsp;        // Move Jerry
+<b class="fc">&nbsp;        if (dir != Direction.NONE){</b>
+<b class="fc">&nbsp;            Vertex jerryLocation = mapData.entityLocation(jerry);</b>
+<b class="fc">&nbsp;            Optional&lt;Vertex&gt; toMove = Optional.empty();</b>
+<b class="fc">&nbsp;            switch (dir) {</b>
+<b class="fc">&nbsp;                case UP -&gt; toMove = mapData.at(new Coord(jerryLocation.x(), jerryLocation.y() - 1));</b>
+<b class="fc">&nbsp;                case DOWN -&gt; toMove = mapData.at(new Coord(jerryLocation.x(), jerryLocation.y() + 1));</b>
+<b class="fc">&nbsp;                case LEFT -&gt; toMove = mapData.at(new Coord(jerryLocation.x() - 1, jerryLocation.y()));</b>
+<b class="fc">&nbsp;                case RIGHT -&gt; toMove = mapData.at(new Coord(jerryLocation.x() + 1, jerryLocation.y()));</b>
+&nbsp;            }
+<b class="fc">&nbsp;            toMove.filter(mapData::isPassable).ifPresent(p -&gt; moveEntity(p, jerry, dir));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Check if Jerry is at the exit
+<b class="fc">&nbsp;        if (exitPoint.equals(mapData.entityLocation(jerry))) {</b>
+<b class="fc">&nbsp;            int increment = ImagePath.JERRY_WIN_LEFT.ordinal() - ((jerry.getCrystal() &gt; 0) ? ImagePath.JERRY_LEFT_CRYSTAL.ordinal() : ImagePath.JERRY_LEFT.ordinal());</b>
+<b class="fc">&nbsp;            jerry.changeImage(imagePathValues[jerry.getImagePath().ordinal() + increment]);</b>
+<b class="fc">&nbsp;            return GameStatus.JERRY_WINS;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+&nbsp;        // Check if Jerry is at same location as Crystal
+<b class="fc">&nbsp;        if (mapData.hasEntity(crystal) &amp;&amp; mapData.entityLocation(crystal).equals(mapData.entityLocation(jerry))){</b>
+<b class="fc">&nbsp;            jerry.activateCrystal();</b>
+<b class="fc">&nbsp;            mapData.removeEntity(crystal);</b>
+&nbsp;            // Change Jerry sprite
+<b class="fc">&nbsp;            jerry.changeImage(imagePathValues[jerry.getImagePath().ordinal() + 2]);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Check if Tom == Jerry
+<b class="fc">&nbsp;        if (mapData.entityLocation(tom).equals(mapData.entityLocation(jerry))){</b>
+&nbsp;            // Jerry wins
+<b class="fc">&nbsp;            if (jerry.getCrystal() &gt; 0) {</b>
+<b class="fc">&nbsp;                jerry.changeImage(imagePathValues[jerry.getImagePath().ordinal() + 4]);</b>
+<b class="fc">&nbsp;                return GameStatus.JERRY_WINS;</b>
+&nbsp;            }
+&nbsp;            // Tom wins
+&nbsp;            // Change image to Tom winning
+<b class="fc">&nbsp;            tom.changeImage(imagePathValues[tom.getImagePath().ordinal() + 2]);</b>
+<b class="fc">&nbsp;            return GameStatus.TOM_WINS;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;        if (tomCount % TOM_UPDATE_RATE != 0) {</b>
+&nbsp;            // Get next vertex of Tom
+&nbsp;            Vertex newTom;
+<b class="fc">&nbsp;            if (jerry.getCrystal() &gt; 0)</b>
+<b class="fc">&nbsp;                newTom = bfsPath.nextShortestPathVertex(mapData, mapData.entityLocation(tom), this.entryPoint);</b>
+&nbsp;            else
+<b class="fc">&nbsp;                newTom = bfsPath.nextShortestPathVertex(mapData, mapData.entityLocation(tom), mapData.entityLocation(jerry));</b>
+&nbsp;
+&nbsp;            // Check Tom&#39;s new vertex
+<b class="fc">&nbsp;            Vertex oldTom = mapData.entityLocation(tom);</b>
+<b class="fc">&nbsp;            if (oldTom.equals(newTom) &amp;&amp; !mapData.entityLocation(tom).equals(entryPoint)) throw new IllegalStateException(&quot;Either Tom or Jerry should have won.&quot;);</b>
+&nbsp;
+&nbsp;            // NONE is set as default because no matter up or down the sprite does not change,
+&nbsp;            // and the value does not affect Tom in moveEntity()
+<b class="fc">&nbsp;            Direction tomDir = Direction.NONE;</b>
+<b class="fc">&nbsp;            if (newTom.x() &gt; oldTom.x())</b>
+<b class="fc">&nbsp;                tomDir = Direction.RIGHT;</b>
+<b class="fc">&nbsp;            else if (newTom.x() &lt; oldTom.x())</b>
+<b class="fc">&nbsp;                tomDir = Direction.LEFT;</b>
+&nbsp;
+&nbsp;            // Move Tom
+<b class="fc">&nbsp;            moveEntity(newTom, tom, tomDir);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Change image when crystal == 1,so after the decrease later it resets the image
+<b class="fc">&nbsp;        if (jerry.getCrystal() == 1)</b>
+<b class="fc">&nbsp;            jerry.changeImage(imagePathValues[jerry.getImagePath().ordinal() - 2]);</b>
+&nbsp;
+&nbsp;        // Respawn crystal if crystal == 0, and it doesn&#39;t exist on the map
+&nbsp;        // Note that it won&#39;t immediately respawn because counter is decreased after this statement
+<b class="fc">&nbsp;        if (!mapData.hasEntity(crystal) &amp;&amp; jerry.getCrystal() == 0){</b>
+&nbsp;            // Get crystal location from algo
+<b class="fc">&nbsp;            mapData.addEntity(bfsPath.randomReachableVertex(mapData, this.entryPoint, this.exitPoint), crystal);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Decrease Jerry counter
+<b class="fc">&nbsp;        jerry.decreaseCounter();</b>
+&nbsp;
+<b class="fc">&nbsp;        ++tomCount;</b>
+<b class="fc">&nbsp;        tomCount %= TOM_UPDATE_RATE;</b>
+&nbsp;        // The game is ongoing
+<b class="fc">&nbsp;        return GameStatus.ONGOING;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void moveEntity(Vertex toMove, Entity entity, Direction dir){
+<b class="fc">&nbsp;        mapData.removeEntity(entity);</b>
+<b class="fc">&nbsp;        mapData.addEntity(toMove, entity);</b>
+<b class="fc">&nbsp;        if (entity instanceof Jerry){</b>
+<b class="fc">&nbsp;            switch (dir){</b>
+&nbsp;                case LEFT -&gt; {
+<b class="fc">&nbsp;                    ImagePath change = ((Jerry) entity).getCrystal() &gt; 0 ? ImagePath.JERRY_LEFT_CRYSTAL : ImagePath.JERRY_LEFT;</b>
+<b class="fc">&nbsp;                    entity.changeImage(change);</b>
+<b class="fc">&nbsp;                }</b>
+&nbsp;                case RIGHT -&gt; {
+<b class="fc">&nbsp;                    ImagePath change = ((Jerry) entity).getCrystal() &gt; 0 ? ImagePath.JERRY_RIGHT_CRYSTAL : ImagePath.JERRY_RIGHT;</b>
+<b class="fc">&nbsp;                    entity.changeImage(change);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;            return;
+&nbsp;        }
+<b class="fc">&nbsp;        if (entity instanceof Tom){</b>
+<b class="fc">&nbsp;            switch (dir){</b>
+<b class="fc">&nbsp;                case LEFT -&gt; entity.changeImage(ImagePath.TOM_LEFT);</b>
+<b class="fc">&nbsp;                case RIGHT -&gt; entity.changeImage(ImagePath.TOM_RIGHT);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-11-14 17:58</div>
+</div>
+</body>
+</html>

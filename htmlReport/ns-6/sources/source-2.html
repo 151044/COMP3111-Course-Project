@@ -1,0 +1,145 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Direction</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">hk.ust.comp3111.ui</a>
+</div>
+
+<h1>Coverage Summary for Class: Direction (hk.ust.comp3111.ui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Direction</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package hk.ust.comp3111.ui;
+&nbsp;
+&nbsp;/**
+&nbsp; * The enum representing movement directions in the game.
+&nbsp; */
+<b class="fc">&nbsp;public enum Direction {</b>
+&nbsp;    /**
+&nbsp;     * The up direction.
+&nbsp;     */
+<b class="fc">&nbsp;    UP,</b>
+&nbsp;    /**
+&nbsp;     * The down direction.
+&nbsp;     */
+<b class="fc">&nbsp;    DOWN,</b>
+&nbsp;    /**
+&nbsp;     * The left direction.
+&nbsp;     */
+<b class="fc">&nbsp;    LEFT,</b>
+&nbsp;    /**
+&nbsp;     * The right direction.
+&nbsp;     */
+<b class="fc">&nbsp;    RIGHT,</b>
+&nbsp;    /**
+&nbsp;     * The none direction.
+&nbsp;     */
+<b class="fc">&nbsp;    NONE;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Translates a String (&quot;W&quot;, &quot;A&quot;, &quot;S&quot;, &quot;D&quot;) to a Direction.
+&nbsp;     * @param string The String to use
+&nbsp;     * @return The corresponding direction; or NONE if the key event does not correspond to any known input.
+&nbsp;     */
+&nbsp;    public static Direction toDirection(String string) {
+<b class="fc">&nbsp;        return switch (string) {</b>
+<b class="fc">&nbsp;            case &quot;W&quot; -&gt; UP;</b>
+<b class="fc">&nbsp;            case &quot;A&quot; -&gt; LEFT;</b>
+<b class="fc">&nbsp;            case &quot;S&quot; -&gt; DOWN;</b>
+<b class="fc">&nbsp;            case &quot;D&quot; -&gt; RIGHT;</b>
+<b class="fc">&nbsp;            default -&gt; NONE;</b>
+&nbsp;        };
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-11-14 17:58</div>
+</div>
+</body>
+</html>

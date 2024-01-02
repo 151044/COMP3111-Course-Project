@@ -1,0 +1,244 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > GamePanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">hk.ust.comp3111.ui</a>
+</div>
+
+<h1>Coverage Summary for Class: GamePanel (hk.ust.comp3111.ui)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GamePanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (45/45)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GamePanel$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (46/46)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package hk.ust.comp3111.ui;
+&nbsp;
+&nbsp;import hk.ust.comp3111.Main;
+&nbsp;import hk.ust.comp3111.engine.Engine;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.concurrent.Executors;
+&nbsp;import java.util.concurrent.ScheduledExecutorService;
+&nbsp;import java.util.concurrent.TimeUnit;
+&nbsp;import java.util.concurrent.atomic.AtomicBoolean;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+&nbsp;import static java.awt.event.KeyEvent.*;
+&nbsp;
+&nbsp;public class GamePanel extends ConstrainedPanel {
+&nbsp;    private static final String TOM_WINS_MSG = &quot;You lose! Try again next time!&quot;;
+&nbsp;    private static final String JERRY_WIN_MSG = &quot;You Win! Well done!&quot;;
+&nbsp;    /**
+&nbsp;     * The input delay per keystroke, in milliseconds.
+&nbsp;     */
+&nbsp;    private static final long INPUT_DELAY = 200L;
+&nbsp;    /**
+&nbsp;     * The time between each tick, in milliseconds.
+&nbsp;     */
+&nbsp;    private static final long TICK_DELAY = 200L;
+<b class="fc">&nbsp;    private final AtomicBoolean inputBool = new AtomicBoolean(true);</b>
+<b class="fc">&nbsp;    private final AtomicBoolean isDone = new AtomicBoolean(false);</b>
+&nbsp;    private final MapComponent component;
+&nbsp;    private final Engine e;
+<b class="fc">&nbsp;    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);</b>
+&nbsp;    private final JPanel map;
+<b class="fc">&nbsp;    public GamePanel(Engine e) {</b>
+<b class="fc">&nbsp;        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));</b>
+<b class="fc">&nbsp;        this.e = e;</b>
+<b class="fc">&nbsp;        component = new MapComponent(e.getMapData());</b>
+<b class="fc">&nbsp;        map = component.getMainPanel();</b>
+<b class="fc">&nbsp;        add(map);</b>
+<b class="fc">&nbsp;        setPreferredSize(new Dimension(1000, 1000)); // hacks</b>
+<b class="fc">&nbsp;        start();</b>
+<b class="fc">&nbsp;        Map&lt;Integer, String&gt; keyToAction = Map.of(</b>
+<b class="fc">&nbsp;                VK_W, &quot;W&quot;,</b>
+<b class="fc">&nbsp;                VK_UP, &quot;W&quot;,</b>
+<b class="fc">&nbsp;                VK_A, &quot;A&quot;,</b>
+<b class="fc">&nbsp;                VK_LEFT, &quot;A&quot;,</b>
+<b class="fc">&nbsp;                VK_S, &quot;S&quot;,</b>
+<b class="fc">&nbsp;                VK_DOWN, &quot;S&quot;,</b>
+<b class="fc">&nbsp;                VK_D, &quot;D&quot;,</b>
+<b class="fc">&nbsp;                VK_RIGHT, &quot;D&quot;</b>
+&nbsp;        );
+<b class="fc">&nbsp;        keyToAction.forEach((i, s) -&gt; setAction(map, i, s, (str) -&gt; {</b>
+<b class="fc">&nbsp;            if (inputBool.get()) {</b>
+<b class="fc">&nbsp;                e.changeDirection(Direction.toDirection(str));</b>
+<b class="fc">&nbsp;                inputBool.set(false);</b>
+&nbsp;            }
+&nbsp;        }));
+&nbsp;    }
+&nbsp;
+&nbsp;    private void setAction(JComponent comp, int keyCode, String actionName, Consumer&lt;String&gt; cons) {
+<b class="fc">&nbsp;        comp.getInputMap().put(KeyStroke.getKeyStroke(keyCode, 0), actionName);</b>
+<b class="fc">&nbsp;        comp.getActionMap().put(actionName, new KeyAction(actionName, cons));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public GridBagConstraints getConstraint() {
+<b class="fc">&nbsp;        GridBagConstraints cons = super.getConstraint();</b>
+<b class="fc">&nbsp;        cons.fill = GridBagConstraints.BOTH;</b>
+<b class="fc">&nbsp;        return cons;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ticks and renders the changes to the game panel.
+&nbsp;     * Do not call this method unless you are a test.
+&nbsp;     */
+&nbsp;    private void tick() {
+<b class="fc">&nbsp;        if (!isDone.get()) {</b>
+<b class="fc">&nbsp;            switch (this.e.tick()) {</b>
+&nbsp;                case TOM_WINS -&gt; {
+<b class="fc">&nbsp;                    JOptionPane.showMessageDialog(null,</b>
+&nbsp;                            TOM_WINS_MSG,
+&nbsp;                            &quot;You lose!&quot;,
+&nbsp;                            JOptionPane.INFORMATION_MESSAGE);
+<b class="fc">&nbsp;                    isDone.set(true);</b>
+<b class="fc">&nbsp;                }</b>
+&nbsp;                case JERRY_WINS -&gt; {
+<b class="fc">&nbsp;                    JOptionPane.showMessageDialog(null,</b>
+&nbsp;                            JERRY_WIN_MSG,
+&nbsp;                            &quot;You win!&quot;,
+&nbsp;                            JOptionPane.INFORMATION_MESSAGE);
+<b class="fc">&nbsp;                    isDone.set(true);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="fc">&nbsp;            SwingUtilities.invokeLater(() -&gt; {</b>
+<b class="fc">&nbsp;                component.render();</b>
+<b class="fc">&nbsp;                invalidate();</b>
+<b class="fc">&nbsp;                revalidate();</b>
+<b class="fc">&nbsp;                repaint();</b>
+&nbsp;            });
+<b class="fc">&nbsp;            if (isDone.get()) {</b>
+<b class="fc">&nbsp;                Main.getFrame().setPanel(new StartPanel());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Starts the scheduler for running the game.
+&nbsp;     * Do not call this method unless you are a test.
+&nbsp;     * Provided only for test to override.
+&nbsp;     */
+&nbsp;    public void start() {
+<b class="fc">&nbsp;        scheduler.scheduleAtFixedRate(this::tick, TICK_DELAY, TICK_DELAY, TimeUnit.MILLISECONDS);</b>
+<b class="fc">&nbsp;        scheduler.scheduleAtFixedRate(() -&gt; inputBool.set(true), 0, INPUT_DELAY, TimeUnit.MILLISECONDS);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-11-14 17:58</div>
+</div>
+</body>
+</html>
