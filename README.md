@@ -1,9 +1,7 @@
 # COMP 3111(H), Fall 2023, Group 42
-![Actions_Badge](https://github.com/151044/Comp3111F23G42/actions/workflows/gradle.yml/badge.svg)
+![Actions_Badge](https://github.com/151044/COMP3111-Course-Project/actions/workflows/gradle.yml/badge.svg)
 
 In this course, which is one of the courses of all time, we finish a project which is one of the projects of all time.
-
-![The image of all time](team-formation.png)
 
 ## Prerequisites
 This application requires Java 17 or later. There has been notable GUI slowdowns with certain versions of JDK 17 on Windows - please grab the [Amazon Correto JDK](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html) if the UI is very sluggish.
