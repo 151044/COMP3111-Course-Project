@@ -1,7 +1,7 @@
 # COMP 3111(H) Fall 2023 Course Project
 ![Actions_Badge](https://github.com/151044/COMP3111-Course-Project/actions/workflows/gradle.yml/badge.svg)
 
-This project was done for COMP 3111(H) of HKUST in Fall 2023. This project had 3 collaborators.
+This project was done for the course COMP 3111(H) (Honors) Software Engineering offered by HKUST in Fall 2023. This project had 3 collaborators.
 - [@151044](https://github.com/151044) (Owner)
 - [@anormalperson8](https://github.com/anormalperson8)
 - [@Phantamysteria](https://github.com/Phantasmysteria)
@@ -9,7 +9,7 @@ This project was done for COMP 3111(H) of HKUST in Fall 2023. This project had 3
 This repository was cloned to avoid revealing sensitive personal information, and hence lack detailed commit history. <br/>
 Contact any one of us for details if necessary.
 
-In this course, which is one of the courses of all time, we finish a project which is one of the projects of all time.
+In this course, which is one of the courses of all time, we finished a project which is one of the projects of all time.
 
 ## Prerequisites
 This application requires Java 17 or later. There has been notable GUI slowdowns with certain versions of JDK 17 on Windows - please grab the [Amazon Correto JDK](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html) if the UI is very sluggish.
