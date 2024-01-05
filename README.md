@@ -1,7 +1,8 @@
 # COMP 3111(H) Fall 2023 Course Project
 ![Actions_Badge](https://github.com/151044/COMP3111-Course-Project/actions/workflows/gradle.yml/badge.svg)
 
-This project was done for the course COMP 3111(H) (Honors) Software Engineering offered by HKUST in Fall 2023. This project had 3 collaborators.
+This project was done for the course COMP 3111(H) (Honors) Software Engineering offered by HKUST in Fall 2023. <br/>
+The 3 collaborators of the project:
 - [@151044](https://github.com/151044) (Owner)
 - [@anormalperson8](https://github.com/anormalperson8)
 - [@Phantamysteria](https://github.com/Phantasmysteria)
